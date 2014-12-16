@@ -1,0 +1,16 @@
+{
+  "name": "anydb-sql-migrations",
+  "version": "1.0.0",
+  "description": "Database migrations for anydb-sql",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "keywords": [
+    "anydb",
+    "sql",
+    "migrations"
+  ],
+  "author": "spion",
+  "license": "MIT"
+}
