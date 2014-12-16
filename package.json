@@ -12,5 +12,13 @@
     "migrations"
   ],
   "author": "spion",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spion/anydb-sql-migrations.git"
+  },
+  "bugs": {
+    "url": "https://github.com/spion/anydb-sql-migrations/issues"
+  },
+  "homepage": "https://github.com/spion/anydb-sql-migrations"
 }
