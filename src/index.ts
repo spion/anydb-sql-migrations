@@ -87,6 +87,7 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
     }
     function loadFromPath(location:string) {
         fs.readdirSync(location)
+            .filter(file => (/\.js$/.test(file)))
             .forEach(file => defineMigration(
                 file.replace(/\.js$/, ''),
                 require(path.resolve(__dirname, '..', file))));
