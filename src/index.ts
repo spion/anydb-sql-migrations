@@ -109,7 +109,14 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
                 }
             });
         else if (args.execute)
-            return migrateTo();
+            return migrateTo().done(
+                _ => process.exit(0),
+                e => {
+                    console.error(e.stack);
+                    process.exit(1);
+                });
+        console.error("Add a --check or --exec argument");
+        process.exit(1);
     }
 
     if (typeof(tasks) === 'string')
