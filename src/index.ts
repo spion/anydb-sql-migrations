@@ -55,7 +55,7 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
         if (from < to)
             return {type: 'up', items: list.slice(from+1, to+1)}
         else if (from > to)
-            return {type: 'down', items: list.slice(to+1, from+1)};
+            return {type: 'down', items: list.slice(to+1, from+1).reverse()};
         else
             return {type: 'none', items: []};
     }
