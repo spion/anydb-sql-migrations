@@ -2,7 +2,7 @@
   "name": "anydb-sql-migrations",
   "version": "1.0.1",
   "description": "Database migrations for anydb-sql",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "tape test/*.js"
   },
