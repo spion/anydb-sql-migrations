@@ -90,7 +90,7 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
             .filter(file => (/\.js$/.test(file)))
             .forEach(file => defineMigration(
                 file.replace(/\.js$/, ''),
-                require(path.resolve(__dirname, '..', file))));
+                require(path.resolve(location, file))));
     }
     function check(f:(m:{type: string; items: MigrationTask[]}) => any) {
         return runMigration(tx => getMigrationList(tx).then(f))
