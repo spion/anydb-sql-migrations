@@ -67,8 +67,9 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
     }
 
     function getMigrationList(tx:anydbSQL.Transaction, target?:string) {
-        return migrations.select().allWithin(tx)
-            .then(ms => _.sortBy(ms, m => m.version).reverse()[0])
+        return migrations.select()
+            .order(migrations.version.descending)
+            .getWithin(tx)
             .then(current => findChain(current && current.version, target))
 
     }
