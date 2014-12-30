@@ -116,7 +116,7 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
                     console.error(e.stack);
                     process.exit(1);
                 });
-        console.error("Add a --check or --exec argument");
+        console.error("Add a --check or --execute argument");
         process.exit(1);
     }
 
