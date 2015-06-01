@@ -26,7 +26,7 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
     var migrations = <MigrationsTable>db.define<Migration>({
         name:'_migrations',
         columns: {
-            version: { dataType: 'text', notNull: true, primaryKey: true},
+            version: { dataType: db.dialect() === 'mysql' ? 'varchar(255)' : 'text', notNull: true, primaryKey: true }
         }
     });
 
@@ -46,14 +46,14 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
 
     function findChain(first:string, last:string) {
         list = _.sortBy(list, item => item.name);
-        var from = _.findIndex(list, item => item.name === first)
-        var to = _.findIndex(list, item => item.name === last)
+        var from = _.findIndex(list, item => item.name === first);
+        var to = _.findIndex(list, item => item.name === last);
 
         if (to === -1)
             to = list.length - 1;
 
         if (from < to)
-            return {type: 'up', items: list.slice(from+1, to+1)}
+            return {type: 'up', items: list.slice(from+1, to+1)};
         else if (from > to)
             return {type: 'down', items: list.slice(to+1, from+1).reverse()};
         else
