@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/spion/anydb-sql-migrations",
   "dependencies": {
-    "anydb-sql": "^0.6.23",
+    "anydb-sql": "^0.6.35",
     "bluebird": "^2.3.11",
     "lodash": "^2.4.1",
     "yargs": "^1.3.3"
