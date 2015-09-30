@@ -26,7 +26,7 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
     var migrations = <MigrationsTable>db.define<Migration>({
         name:'_migrations',
         columns: {
-            version: { dataType: db.dialect() === 'mysql' ? 'varchar(255)' : 'text', notNull: true, primaryKey: true }
+            version: { dataType: db.dialect() === 'mysql' ? 'text' : 'varchar(255)', notNull: true, primaryKey: true }
         }
     });
 
