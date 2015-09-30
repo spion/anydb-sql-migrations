@@ -1,21 +1,21 @@
 declare module "anydb-sql-migrations" {
-import anydbSQL = require('anydb-sql');
 import Promise = require('bluebird');
+import { Column, Table, Transaction, AnydbSql } from 'anydb-sql';
 export interface Migration {
     version: string;
 }
-export interface MigrationsTable extends anydbSQL.Table<Migration> {
-    version: anydbSQL.Column<string>;
+export interface MigrationsTable extends Table<Migration> {
+    version: Column<string>;
 }
 export interface MigFn {
-    (tx: anydbSQL.Transaction): Promise<any>;
+    (tx: Transaction): Promise<any>;
 }
 export interface MigrationTask {
     up: MigFn;
     down: MigFn;
     name: string;
 }
-export function create(db: anydbSQL.AnydbSql, tasks: any): {
+export function create(db: AnydbSql, tasks: any): {
     run: () => Promise<any>;
     migrateTo: (target?: string) => Promise<any>;
     check: (f: (m: {
