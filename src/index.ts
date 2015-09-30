@@ -1,26 +1,27 @@
-import anydbSQL = require('anydb-sql');
 import Promise = require('bluebird');
 import _ = require('lodash');
 import fs = require('fs');
 import path = require('path');
 
+import { Column, Table, Transaction, AnydbSql } from 'anydb-sql';
+
 export interface Migration {
     version:string
 }
 
-export interface MigrationsTable extends anydbSQL.Table<Migration> {
-    version:anydbSQL.Column<string>
+export interface MigrationsTable extends Table<Migration> {
+    version:Column<string>
 }
 
 export interface MigFn {
-    (tx:anydbSQL.Transaction):Promise<any>
+    (tx:Transaction):Promise<any>
 }
 
 export interface MigrationTask {
     up:MigFn; down:MigFn; name:string
 }
 
-export function create(db:anydbSQL.AnydbSql, tasks:any) {
+export function create(db:AnydbSql, tasks:any) {
 
     var list:Array<MigrationTask> = [];
     var migrations = <MigrationsTable>db.define<Migration>({
@@ -59,14 +60,14 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
         else
             return {type: 'none', items: []};
     }
-    function add(tx:anydbSQL.Transaction, name:string) {
+    function add(tx:Transaction, name:string) {
         return migrations.insert({version: name}).execWithin(tx);
     }
-    function remove(tx:anydbSQL.Transaction, name: string) {
+    function remove(tx:Transaction, name: string) {
         return migrations.where({version: name}).delete().execWithin(tx);
     }
 
-    function getMigrationList(tx:anydbSQL.Transaction, target?:string) {
+    function getMigrationList(tx:Transaction, target?:string) {
         return migrations.select()
             .order(migrations.version.descending)
             .getWithin(tx)
@@ -74,10 +75,10 @@ export function create(db:anydbSQL.AnydbSql, tasks:any) {
 
     }
 
-    function runSingle(tx:anydbSQL.Transaction, type:string, m:MigrationTask) {
+    function runSingle(tx:Transaction, type:string, m:MigrationTask) {
         return type == 'up' ?
-            Promise.join(add(tx, m.name), m.up(tx)):
-            Promise.join(remove(tx, m.name), m.down(tx));
+            m.up(tx).then(() => add(tx, m.name)) :
+            m.down(tx).then(() => remove(tx, m.name));
     }
     function migrateTo(target?:string) {
         return runMigration(tx => getMigrationList(tx, target).then(
