@@ -22,12 +22,11 @@ export interface MigrationTask {
 }
 
 export function create(db:AnydbSql, tasks:any) {
-
     var list:Array<MigrationTask> = [];
     var migrations = <MigrationsTable>db.define<Migration>({
-        name:'_migrations',
+        name: '_migrations',
         columns: {
-            version: { dataType: db.dialect() === 'mysql' ? 'text' : 'varchar(255)', notNull: true, primaryKey: true }
+            version: { dataType: db.dialect() === 'mysql' ? 'varchar(255)' : 'text', notNull: true, primaryKey: true }
         }
     });
 
@@ -42,23 +41,23 @@ export function create(db:AnydbSql, tasks:any) {
     function defineMigration(name: string, fns:{up:MigFn; down:MigFn}) {
         if (_.find(list, m => m.name == name) != null)
             return;
-        list.push({name: name, up:fns.up, down: fns.down});
+        list.push({ name: name, up: fns.up, down: fns.down });
     }
 
     function findChain(first:string, last:string) {
         list = _.sortBy(list, item => item.name);
-        var from = _.findIndex(list, item => item.name === first);
+        const from = _.findIndex(list, item => item.name === first);
         var to = _.findIndex(list, item => item.name === last);
 
         if (to === -1)
             to = list.length - 1;
 
         if (from < to)
-            return {type: 'up', items: list.slice(from+1, to+1)};
+            return { type: 'up', items: list.slice(from + 1, to + 1) };
         else if (from > to)
-            return {type: 'down', items: list.slice(to+1, from+1).reverse()};
+            return { type: 'down', items: list.slice(to + 1, from + 1).reverse() };
         else
-            return {type: 'none', items: []};
+            return { type: 'none', items: [] };
     }
     function add(tx:Transaction, name:string) {
         return migrations.insert({version: name}).execWithin(tx);
@@ -98,16 +97,16 @@ export function create(db:AnydbSql, tasks:any) {
         return runMigration(tx => getMigrationList(tx).then(f))
     }
     function run() {
-        var args = require('yargs').argv;
+        const args = require('yargs').argv;
         if (args.check)
             return check(l => {
                 if (l.items.length) {
                     console.log("Migrations to run");
-                    l.items.forEach(item => console.log("-", item.name))
+                    l.items.forEach(item => console.log("-", item.name));
                     process.exit(1);
                 } else {
                     console.log("No pending migrations");
-                    process.exit(0)
+                    process.exit(0);
                 }
             });
         else if (args.execute)
@@ -126,10 +125,9 @@ export function create(db:AnydbSql, tasks:any) {
     else
         tasks.forEach((task:MigrationTask) => defineMigration(task.name, task));
 
-
     return {
         run:run,
         migrateTo:migrateTo,
         check:check
-    }
+    };
 }
