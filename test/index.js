@@ -43,7 +43,7 @@ function mkBasicDB() {
 t.test('basic', function(t) {
     var db = mkBasicDB();
     console.log("Hmm");
-    var migc = mig.create(db.db, [{
+    var m1 = {
         name: '001-basic',
         up: function(tx) {
             return db.user.create().execWithin(tx)
@@ -54,7 +54,9 @@ t.test('basic', function(t) {
                 });
         },
         down: function() {}
-    }, {
+    };
+
+    var m2 = {
         name: '002-storage-migrate',
         up: function(tx) {
             db.account.addColumn({
@@ -77,14 +79,18 @@ t.test('basic', function(t) {
                 db.account.alter().dropColumn(db.account.credentials);
             });
         }
-    }]);
-    return migc.check(function(res) {
-        t.equal(res.items.length, 2, 'should be 2 pending migrations');
+    };
+
+    var migc1 = mig.create(db.db, [m1]);
+    var migc2 = mig.create(db.db, [m1, m2])
+
+    return migc1.check(function(res) {
+        t.equal(res.length, 1, 'should be 1 pending migration');
     }).then(function() {
-        return migc.migrateTo('001-basic')
+        return migc1.migrate()
     }).then(function(res) {
-        return migc.check(function(res) {
-            t.equal(res.items.length, 1, 'should be 1 pending migration');
+        return migc1.check(function(res) {
+            t.equal(res.length, 0, 'should be 0 pending migrations');
         });
     }).then(function() {
         return [db.account.insert({id: 1, name: 'hi', credentials: 'storage'}),
@@ -97,7 +103,7 @@ t.test('basic', function(t) {
         });
     }).then(function() {
         console.log("Running the rest...");
-        return migc.migrateTo()
+        return migc2.migrate()
     }).then(function() {
         return db.storage.where({id: 1}).get().then(function(s) {
             t.equal(s.credentials, 'storage', 'should be successfully migrated');
