@@ -1,6 +1,6 @@
 {
   "name": "anydb-sql-migrations",
-  "version": "1.0.12",
+  "version": "2.0.0",
   "description": "Database migrations for anydb-sql",
   "main": "lib/index.js",
   "scripts": {
