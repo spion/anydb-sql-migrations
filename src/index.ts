@@ -91,6 +91,9 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
         return runMigration(tx => migrations.select()
             .order(migrations.version.descending)
             .allWithin(tx).then(migrations => {
+                if (!migrations.length) {
+                  throw new Error("No migrations available to rollback");
+                }
                 return Promise.all(migrations.map(mig => {
                   const task = _.find(list, item => item.name == mig.version);
 

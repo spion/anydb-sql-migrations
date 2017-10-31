@@ -119,6 +119,10 @@ t.test('basic', function(t) {
       db.storage.where({id: 1}).get()
       .then(_ => { throw new Error("Table should not exist") },
             e => t.ok(e.message, 'Expecting error trying to access storage table: ' + e.message))
+    }).then(function() {
+      return migc2.drop()
+        .then(res => {console.log(res); throw new Error('Drop should not work on empty db')},
+              e => t.ok(e.message, 'Expecting error trying to run drop on empty db: ' + e.message))
     })
 });
 
