@@ -21,7 +21,6 @@ export interface MigrationTask {
     up:MigFn; down:MigFn; name:string
 }
 
-
 export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
     var list:Array<MigrationTask> = [];
     var migrations = <MigrationsTable>db.define<Migration>({
@@ -88,6 +87,18 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
             }))
     }
 
+    function undoAll() {
+        return runMigration(tx => migrations.select()
+            .order(migrations.version.descending)
+            .allWithin(tx).then(migrations => {
+                return Promise.all(migrations.map(mig => {
+                  const task = _.find(list, item => item.name == mig.version);
+
+                  return runSingle(tx, "down", task);
+                }));
+            }));
+    }
+
     function loadFromPath(location:string) {
         fs.readdirSync(location)
             .filter(file => (/\.js$/.test(file)))
@@ -128,7 +139,17 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
                 process.exit(1);
             })
         }
-        console.error("Add a --check, --execute or --rollback argument");
+        else if (args.drop) {
+            return undoAll().done(_ => process.exit(0), e => {
+                  if (e.message == 'No migrations available to rollback') {
+                      console.error(e.message);
+                  } else {
+                      console.error(e.stack);
+                  }
+                  process.exit(1);
+            })
+        }
+        console.error("Add a --check, --execute, --drop or --rollback argument");
         process.exit(1);
     }
 
@@ -137,5 +158,5 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
     else
         tasks.forEach(task => defineMigration(task.name, task));
 
-    return {run, check, migrate}
+    return {run, check, migrate, drop: undoAll}
 }
