@@ -53,7 +53,11 @@ t.test('basic', function(t) {
                     return db.storage.create().execWithin(tx)
                 });
         },
-        down: function() {}
+        down: function(tx) {
+          return db.user.drop().execWithin(tx)
+            .then(_ => db.account.drop().execWithin(tx))
+            .then(_ => db.storage.drop().execWithin(tx))
+        }
     };
 
     var m2 = {
@@ -76,9 +80,10 @@ t.test('basic', function(t) {
                         });
                 }));
             }).then(function() {
-                db.account.alter().dropColumn(db.account.credentials);
+              return Promise.resolve()
             });
-        }
+        },
+        down: () => {return Promise.resolve()}
     };
 
     var migc1 = mig.create(db.db, [m1]);
@@ -108,6 +113,12 @@ t.test('basic', function(t) {
         return db.storage.where({id: 1}).get().then(function(s) {
             t.equal(s.credentials, 'storage', 'should be successfully migrated');
         });
-    });
+    }).then(function() {
+        return migc2.drop()
+    }).then(function() {
+      db.storage.where({id: 1}).get()
+      .then(_ => { throw new Error("Table should not exist") },
+            e => t.ok(e.message, 'Expecting error trying to access storage table: ' + e.message))
+    })
 });
 

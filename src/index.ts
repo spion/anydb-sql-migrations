@@ -158,5 +158,5 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
     else
         tasks.forEach(task => defineMigration(task.name, task));
 
-    return {run, check, migrate, drop: undoAll}
+    return {run, check, migrate, undoLast, drop: undoAll}
 }

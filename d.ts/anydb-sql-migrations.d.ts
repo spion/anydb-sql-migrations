@@ -15,12 +15,11 @@ export interface MigrationTask {
     down: MigFn;
     name: string;
 }
-export function create(db: AnydbSql, tasks: any): {
+export function create(db: AnydbSql, tasks: string | MigrationTask[]): {
     run: () => Promise<any>;
-    migrateTo: (target?: string) => Promise<any>;
-    check: (f: (m: {
-        type: string;
-        items: MigrationTask[];
-    }) => any) => Promise<any>;
+    check: (f: (items: MigrationTask[]) => any) => Promise<any>;
+    migrate: () => Promise<any>;
+    undoLast: () => Promise<any>;
+    drop: () => Promise<any>;
 };
 }
