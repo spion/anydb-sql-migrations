@@ -70,11 +70,11 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
             m.up(tx).then(() => add(tx, m.name)) :
             m.down(tx).then(() => remove(tx, m.name));
     }
-    function migrate() {
+    function migrate(opts: { silent?: boolean } = {}) {
         return runMigration(tx => getMigrationList(tx).then(
             migrations => migrations.reduce(
                 (acc, m) => acc.then(_ => runSingle(tx, "up", m))
-                    .then(_ => console.log("Completed:", m.name))
+                    .then(_ => !opts.silent && console.log("Completed:", m.name))
                     .thenReturn(), Promise.resolve())))
     }
     function undoLast() {
