@@ -42,6 +42,14 @@ To run pending migrations, use
 
 It should run the exported empty `up` function.
 
+If you want to silently run the migrations, you can pass `{ silent: true }` to `run` and `migrate` functions
+
+```js
+require('anydb-sql-migrate')
+.create(myanydbsql, '/path/to/migrations/dir')
+.migrate({ silent: true }); // it will supress only console.logs, not errors
+```
+
 # license
 
 MIT
