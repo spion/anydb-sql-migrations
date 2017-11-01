@@ -94,11 +94,11 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
                 if (!migrations.length) {
                   throw new Error("No migrations available to rollback");
                 }
-                return Promise.all(migrations.map(mig => {
+                return Promise.each(migrations, mig => {
                   const task = _.find(list, item => item.name == mig.version);
 
                   return runSingle(tx, "down", task);
-                }));
+                });
             }));
     }
 
