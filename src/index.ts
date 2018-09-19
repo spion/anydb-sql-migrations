@@ -22,10 +22,10 @@ export interface MigrationTask {
 }
 
 export interface MigrationOptions {
-    check: boolean;
-    execute: boolean;
-    rollback: boolean;
-    drop: boolean;
+    check?: boolean;
+    execute?: boolean;
+    rollback?: boolean;
+    drop?: boolean;
 }
 
 export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
@@ -120,47 +120,52 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
         return runMigration(tx => getMigrationList(tx).then(f))
     }
     function run(migrationOptions?: MigrationOptions) {
+        function end(code: number): Promise<void> {
+            if (code === 0) return Promise.resolve();
+            else return Promise.reject(new Error(`exited with non-zero status code. Code: ${code}`));
+        }
+
         const args = migrationOptions || require('yargs').argv;
         if (args.check)
             return check(migrations => {
                 if (migrations.length) {
                     console.log("Migrations to run");
                     migrations.forEach(item => console.log("-", item.name));
-                    process.exit(1);
+                    end(1);
                 } else {
                     console.log("No pending migrations");
-                    process.exit(0);
+                    end(0);
                 }
             });
         else if (args.execute)
             return migrate().done(
-                _ => process.exit(0),
+                _ => end(0),
                 e => {
                     console.error(e.stack);
-                    process.exit(1);
+                    end(1);
                 });
         else if (args.rollback) {
-            return undoLast().done(_ => process.exit(0), e => {
+            return undoLast().done(_ => end(0), e => {
                 if (e.message == 'No migrations available to rollback') {
                     console.error(e.message);
                 } else {
                     console.error(e.stack);
                 }
-                process.exit(1);
+                end(1);
             })
         }
         else if (args.drop) {
-            return undoAll().done(_ => process.exit(0), e => {
+            return undoAll().done(_ => end(0), e => {
                   if (e.message == 'No migrations available to rollback') {
                       console.error(e.message);
                   } else {
                       console.error(e.stack);
                   }
-                  process.exit(1);
+                  end(1);
             })
         }
         console.error("Add a --check, --execute, --drop or --rollback argument");
-        process.exit(1);
+        end(1);
     }
 
     if (typeof tasks === 'string')
