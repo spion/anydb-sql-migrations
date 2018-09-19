@@ -15,8 +15,15 @@ declare module "anydb-sql-migrations" {
         down: MigFn;
         name: string;
     }
+    export interface MigrationOptions {
+        check?: boolean;
+        execute?: boolean;
+        rollback?: boolean;
+        drop?: boolean;
+    }
     export function create(db: AnydbSql, tasks: string | MigrationTask[]): {
         run: () => Promise<any>;
+        execMigrations: (migrationOptions: MigrationOptions) => Promise<void>;
         check: (f: (items: MigrationTask[]) => any) => Promise<any>;
         migrate: () => Promise<any>;
         undoLast: () => Promise<any>;
