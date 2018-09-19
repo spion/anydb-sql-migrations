@@ -21,6 +21,13 @@ export interface MigrationTask {
     up:MigFn; down:MigFn; name:string
 }
 
+export interface MigrationOptions {
+    check: boolean;
+    execute: boolean;
+    rollback: boolean;
+    drop: boolean;
+}
+
 export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
     var list:Array<MigrationTask> = [];
     var migrations = <MigrationsTable>db.define<Migration>({
@@ -112,8 +119,8 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
     function check(f:(items: MigrationTask[]) => any) {
         return runMigration(tx => getMigrationList(tx).then(f))
     }
-    function run() {
-        const args = require('yargs').argv;
+    function run(migrationOptions?: MigrationOptions) {
+        const args = migrationOptions || require('yargs').argv;
         if (args.check)
             return check(migrations => {
                 if (migrations.length) {
