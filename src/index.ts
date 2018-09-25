@@ -21,13 +21,6 @@ export interface MigrationTask {
     up:MigFn; down:MigFn; name:string
 }
 
-export interface MigrationOptions {
-    check?: boolean;
-    execute?: boolean;
-    rollback?: boolean;
-    drop?: boolean;
-}
-
 export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
     var list:Array<MigrationTask> = [];
     var migrations = <MigrationsTable>db.define<Migration>({
@@ -120,51 +113,47 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
         return runMigration(tx => getMigrationList(tx).then(f))
     }
     function run() {
-        var args = require('yargs').argv;
-        return execMigrations(args).then(() => process.exit(0)).catch(e => process.exit(1));
-    }
-    function execMigrations(migrationOptions: MigrationOptions) {
-        if (migrationOptions.check)
+        const args = require('yargs').argv;
+        if (args.check)
             return check(migrations => {
                 if (migrations.length) {
                     console.log("Migrations to run");
                     migrations.forEach(item => console.log("-", item.name));
-                    return Promise.resolve();
+                    process.exit(1);
                 } else {
                     console.log("No pending migrations");
-                    return Promise.resolve();
+                    process.exit(0);
                 }
             });
-        else if (migrationOptions.execute)
+        else if (args.execute)
             return migrate().done(
-                _ => Promise.resolve(),
+                _ => process.exit(0),
                 e => {
                     console.error(e.stack);
-                    return Promise.reject(e);
+                    process.exit(1);
                 });
-        else if (migrationOptions.rollback) {
-            return undoLast().done(_ => Promise.resolve(), e => {
+        else if (args.rollback) {
+            return undoLast().done(_ => process.exit(0), e => {
                 if (e.message == 'No migrations available to rollback') {
                     console.error(e.message);
                 } else {
                     console.error(e.stack);
                 }
-                return Promise.reject(e);
+                process.exit(1);
             })
         }
-        else if (migrationOptions.drop) {
-            return undoAll().done(_ => Promise.resolve(), e => {
+        else if (args.drop) {
+            return undoAll().done(_ => process.exit(0), e => {
                   if (e.message == 'No migrations available to rollback') {
                       console.error(e.message);
                   } else {
                       console.error(e.stack);
                   }
-                  return Promise.reject(e);
+                  process.exit(1);
             })
         }
-        var wrontArgumentMessage = "Add a --check, --execute, --drop or --rollback argument";
-        console.error(wrontArgumentMessage);
-        return Promise.resolve(new Error(wrontArgumentMessage));
+        console.error("Add a --check, --execute, --drop or --rollback argument");
+        process.exit(1);
     }
 
     if (typeof tasks === 'string')

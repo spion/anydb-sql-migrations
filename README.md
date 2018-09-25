@@ -50,14 +50,6 @@ require('anydb-sql-migrate')
 .migrate({ silent: true }); // it will supress only console.logs, not errors
 ```
 
-If you want to run the migrations from JavaScript code instead of cli, you can pass `{ execute: true }` to `run` function
-
-```js
-require('anydb-sql-migrate')
-.create(myanydbsql, '/path/to/migrations/dir')
-.run({ execute: true }); // will use this argument instead of reading from process.argv
-```
-
 # license
 
 MIT
