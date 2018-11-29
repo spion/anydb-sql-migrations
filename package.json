@@ -1,6 +1,6 @@
 {
   "name": "anydb-sql-migrations",
-  "version": "2.2.4",
+  "version": "2.3.0",
   "description": "Database migrations for anydb-sql",
   "main": "lib/index.js",
   "scripts": {
@@ -31,7 +31,7 @@
   "devDependencies": {
     "blue-tape": "^0.1.8",
     "source-map-support": "^0.2.8",
-    "sqlite3": "^3.0.4",
+    "sqlite3": "^4.0.4",
     "tsc-wrap-definition": "^1.0.2"
   }
 }
