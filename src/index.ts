@@ -50,7 +50,7 @@ export function create(db:AnydbSql, tasks:string | MigrationTask[]) {
             .allWithin(tx)
             .then(migs => {
                 var alreadyExecuted = migs.map(m => m.version)
-                return _(list).sortBy(m => m.name).filter(m => !_.contains(alreadyExecuted, m.name)).value()
+                return _(list).sortBy(m => m.name).filter(m => !_.includes(alreadyExecuted, m.name)).value()
             })
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "anydb-sql-migrations",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Database migrations for anydb-sql",
   "main": "lib/index.js",
   "scripts": {
@@ -24,14 +24,16 @@
   "dependencies": {
     "anydb-sql": "^0.7.0",
     "bluebird": "^2.3.11",
-    "lodash": "^2.4.1",
+    "lodash": "^4.17.11",
     "yargs": "^1.3.3"
   },
   "types": "./d.ts/anydb-sql-migrations.d.ts",
   "devDependencies": {
+    "@types/lodash": "^4.14.50",
     "blue-tape": "^0.1.8",
     "source-map-support": "^0.2.8",
     "sqlite3": "^4.0.4",
-    "tsc-wrap-definition": "^1.0.2"
+    "tsc-wrap-definition": "^1.0.2",
+    "typescript": "^3.2.2"
   }
 }
