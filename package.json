@@ -1,6 +1,6 @@
 {
-  "name": "anydb-sql-migrations-forked",
-  "version": "2.4.2",
+  "name": "anydb-sql-migrations-refork",
+  "version": "2.5.0",
   "description": "Database migrations for anydb-sql",
   "main": "lib/index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/spion/anydb-sql-migrations",
   "dependencies": {
-    "anydb-sql-fork-publish": "0.7.2",
+    "anydb-sql-fork-publish": "^2.1.4",
     "bluebird": "^2.3.11",
     "lodash": "^4.17.11",
     "yargs": "^1.3.3"
